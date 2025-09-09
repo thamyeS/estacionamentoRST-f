@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estacionamento RST - Sistema de Gestão</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-car"></i>
+                    <h1>Estacionamento RST</h1>
+                </div>
+                <nav class="nav-menu">
+                    <button class="nav-btn" onclick="showSection('dashboard')" id="dashboard-btn">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </button>
+                    <button class="nav-btn" onclick="showSection('veiculos')" id="veiculos-btn">
+                        <i class="fas fa-car"></i>
+                        Veículos
+                    </button>
+                    <button class="nav-btn" onclick="showSection('relatorios')" id="relatorios-btn">
+                        <i class="fas fa-chart-bar"></i>
+                        Relatórios
+                    </button>
+                </nav>
+                <button class="menu-toggle" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-car"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="total-veiculos">0</h3>
+                            <p>Veículos Ativos</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="estadias-hoje">0</h3>
+                            <p>Estadias Hoje</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="faturamento-hoje">R$ 0,00</h3>
+                            <p>Faturamento Hoje</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-parking"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="vagas-disponiveis">50</h3>
+                            <p>Vagas Disponíveis</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-activities">
+                    <h3><i class="fas fa-history"></i> Atividades Recentes</h3>
+                    <div id="recent-list" class="activity-list">
+                        <!-- Atividades serão carregadas aqui -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Veículos Section -->
+            <section id="veiculos" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-car"></i> Gestão de Veículos</h2>
+                    <button class="btn-primary" onclick="openVehicleModal()">
+                        <i class="fas fa-plus"></i>
+                        Novo Veículo
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <input type="text" id="search-input" placeholder="Buscar por placa, proprietário..." onkeyup="filterVehicles()">
+                    <select id="type-filter" onchange="filterVehicles()">
+                        <option value="">Todos os tipos</option>
+                        <option value="CARRO">Carro</option>
+                        <option value="MOTO">Moto</option>
+                        <option value="Onibus">Onibus</option>
+                        <option value="Van">Van</option>
+                        <option value="CAMINHAO">Caminhão</option>
+                    </select>
+                </div>
+
+                <div id="vehicles-grid" class="vehicles-grid">
+                    <!-- Veículos serão carregados aqui -->
+                </div>
+            </section>
+
+            <!-- Relatórios Section -->
+            <section id="relatorios" class="section">
+                <div class="section-header">
+                    <h2><i class="fas fa-chart-bar"></i> Relatórios</h2>
+                </div>
+                
+                <div class="report-filters">
+                    <input type="date" id="date-from" value="">
+                    <input type="date" id="date-to" value="">
+                    <button class="btn-secondary" onclick="generateReport()">
+                        <i class="fas fa-search"></i>
+                        Gerar Relatório
+                    </button>
+                </div>
+
+                <div id="report-content" class="report-content">
+                    <div class="report-summary">
+                        <div class="summary-item">
+                            <h4>Total de Estadias</h4>
+                            <span id="report-total-estadias">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Faturamento Total</h4>
+                            <span id="report-faturamento">R$ 0,00</span>
+                        </div>
+                        <div class="summary-item">
+                            <h4>Tempo Médio</h4>
+                            <span id="report-tempo-medio">0h 0m</span>
+                        </div>
+                    </div>
+                    
+                    <div id="report-table" class="report-table">
+                        <!-- Tabela de relatório será carregada aqui -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Veículo -->
+    <div id="add-vehicle" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title-vehicle"><i class="fas fa-car"></i> Cadastro de Veículo</h3>
+                <button class="close-btn" onclick="closeModal('add-vehicle')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="vehicle-form" class="modal-form">
+                <input type="hidden" id="placa-original" name="placa-original" value="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="placa">Placa do Veículo</label>
+                        <input type="text" id="placa" name="placa" placeholder="ABC-1234" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo">Tipo de Veículo</label>
+                        <select id="tipo" name="tipo" required>
+                              <option value="">Todos os tipos</option>
+                        <option value="CARRO">Carro</option>
+                        <option value="MOTO">Moto</option>
+                        <option value="Onibus">Onibus</option>
+                        <option value="Van">Van</option>
+                        <option value="CAMINHAO">Caminhão</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="proprietario">Proprietário</label>
+                        <input type="text" id="proprietario" name="proprietario" placeholder="Nome do proprietário" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(11) 99999-9999" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="marca">Marca</label>
+                        <input type="text" id="marca" name="marca" placeholder="Toyota, Honda, etc." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modelo">Modelo</label>
+                        <input type="text" id="modelo" name="modelo" placeholder="Corolla, Civic, etc." required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cor">Cor</label>
+                        <input type="text" id="cor" name="cor" placeholder="Branco, Preto, etc." required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ano">Ano</label>
+                        <input type="number" id="ano" name="ano" placeholder="2023" min="1900" max="2030" required>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('add-vehicle')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i>
+                        Salvar Veículo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Detalhes do Veículo -->
+    <div id="vehicle-details" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> Detalhes do Veículo</h3>
+                <button class="close-btn" onclick="closeModal('vehicle-details')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="vehicle-details-content" class="vehicle-details">
+                <!-- Conteúdo será carregado dinamicamente -->
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn-danger" onclick="registrarSaida()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Registrar Saída
+                </button>
+                <button type="button" class="btn-secondary" onclick="closeModal('vehicle-details')">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Carregando...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container">
+        <!-- Notificações aparecerão aqui -->
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
