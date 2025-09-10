@@ -9,7 +9,6 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <header class="header">
             <div class="header-content">
                 <div class="logo">
@@ -36,9 +35,7 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Dashboard Section -->
             <section id="dashboard" class="section active">
                 <div class="section-header">
                     <h2><i class="fas fa-tachometer-alt"></i> Dashboard</h2>
@@ -86,12 +83,11 @@
                 <div class="recent-activities">
                     <h3><i class="fas fa-history"></i> Atividades Recentes</h3>
                     <div id="recent-list" class="activity-list">
-                        <!-- Atividades serão carregadas aqui -->
+                        
                     </div>
                 </div>
             </section>
 
-            <!-- Veículos Section -->
             <section id="veiculos" class="section">
                 <div class="section-header">
                     <h2><i class="fas fa-car"></i> Gestão de Veículos</h2>
@@ -107,18 +103,17 @@
                         <option value="">Todos os tipos</option>
                         <option value="CARRO">Carro</option>
                         <option value="MOTO">Moto</option>
-                        <option value="ONIUS">Onibus</option>
+                        <option value="ONIBUS">Onibus</option>
                         <option value="VAN">Van</option>
                         <option value="CAMINHAO">Caminhão</option>
                     </select>
                 </div>
 
                 <div id="vehicles-grid" class="vehicles-grid">
-                    <!-- Veículos serão carregados aqui -->
+                    
                 </div>
             </section>
 
-            <!-- Relatórios Section -->
             <section id="relatorios" class="section">
                 <div class="section-header">
                     <h2><i class="fas fa-chart-bar"></i> Relatórios</h2>
@@ -150,14 +145,13 @@
                     </div>
                     
                     <div id="report-table" class="report-table">
-                        <!-- Tabela de relatório será carregada aqui -->
+                        
                     </div>
                 </div>
             </section>
         </main>
     </div>
 
-    <!-- Modal para Adicionar/Editar Veículo -->
     <div id="add-vehicle" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -232,7 +226,6 @@
         </div>
     </div>
 
-    <!-- Modal para Detalhes do Veículo -->
     <div id="vehicle-details" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -242,7 +235,7 @@
                 </button>
             </div>
             <div id="vehicle-details-content" class="vehicle-details">
-                <!-- Conteúdo será carregado dinamicamente -->
+                
             </div>
             <div class="form-actions">
                 <button type="button" class="btn-danger" onclick="registrarSaida()">
@@ -256,17 +249,17 @@
         </div>
     </div>
 
-    <!-- Loading Spinner -->
     <div id="loading" class="loading">
         <div class="spinner"></div>
         <p>Carregando...</p>
     </div>
 
-    <!-- Toast Notifications -->
     <div id="toast-container" class="toast-container">
-        <!-- Notificações aparecerão aqui -->
+        
     </div>
 
     <script src="script.js"></script>
 </body>
 </html>
+</html>
+
