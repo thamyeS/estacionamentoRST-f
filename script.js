@@ -511,14 +511,19 @@ async function handleEstadiaSubmit(event) {
 function openVehicleModal(vehicle = null) {
     const form = document.getElementById('vehicle-form');
     form.reset();
-    document.getElementById('placa').disabled = false; // Habilitar placa por padrão
-    document.getElementById('placa-original').value = ''; // Limpar campo oculto
+    
+    // Garante que o campo esteja sempre editável por padrão
+    document.getElementById('placa').readOnly = false; 
+    document.getElementById('placa-original').value = '';
 
     if (vehicle) {
         document.getElementById('modal-title-vehicle').innerHTML = '<i class="fas fa-car"></i> Editar Veículo';
         document.getElementById('placa').value = vehicle.placa;
-        document.getElementById('placa').disabled = true; // Desabilitar edição da placa
-        document.getElementById('placa-original').value = vehicle.placa; // Guardar placa original
+        
+        // AQUI ESTÁ A CORREÇÃO PRINCIPAL
+        document.getElementById('placa').readOnly = true; // Usar readonly em vez de disabled
+        
+        document.getElementById('placa-original').value = vehicle.placa;
         document.getElementById('tipo').value = vehicle.tipo;
         document.getElementById('proprietario').value = vehicle.proprietario;
         document.getElementById('telefone').value = vehicle.telefone;
@@ -528,6 +533,8 @@ function openVehicleModal(vehicle = null) {
         document.getElementById('ano').value = vehicle.ano;
     } else {
         document.getElementById('modal-title-vehicle').innerHTML = '<i class="fas fa-car"></i> Cadastro de Veículo';
+        // Garante que ao adicionar novo, não seja readonly
+        document.getElementById('placa').readOnly = false; 
     }
     openModal('add-vehicle');
 }
