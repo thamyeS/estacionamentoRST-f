@@ -1,57 +1,45 @@
-// Configuração da API
-const API_BASE_URL = 'https://estacionamento-rst.vercel.app/';
+const API_BASE_URL = 'http://localhost:3001';
 
-// Estado da aplicação
 let currentVehicles = [];
 let currentEstadias = [];
 let currentSection = 'dashboard';
 let selectedVehicle = null;
 let selectedEstadia = null;
 
-// Inicialização da aplicação
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
 function initializeApp() {
-    // Definir datas padrão para relatórios
     const today = new Date();
     const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
     
     document.getElementById('date-from').value = formatDateForInput(firstDay);
     document.getElementById('date-to').value = formatDateForInput(today);
     
-    // Carregar dados iniciais
     loadDashboardData();
     loadVehicles();
     
-    // Configurar formulários
     setupVehicleForm();
     setupEstadiaForm();
     
-    // Mostrar dashboard por padrão
     showSection('dashboard');
 }
 
-// Navegação entre seções
 function showSection(sectionName) {
-    // Remover classe active de todas as seções
     document.querySelectorAll('.section').forEach(section => {
         section.classList.remove('active');
     });
     
-    // Remover classe active de todos os botões
     document.querySelectorAll('.nav-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     
-    // Mostrar seção selecionada
     document.getElementById(sectionName).classList.add('active');
     document.getElementById(sectionName + '-btn').classList.add('active');
     
     currentSection = sectionName;
     
-    // Carregar dados específicos da seção
     switch(sectionName) {
         case 'dashboard':
             loadDashboardData();
@@ -68,13 +56,11 @@ function showSection(sectionName) {
     }
 }
 
-// Toggle menu mobile
 function toggleMobileMenu() {
     const navMenu = document.querySelector('.nav-menu');
     navMenu.classList.toggle('active');
 }
 
-// Carregar dados do dashboard
 async function loadDashboardData() {
     showLoading();
     
@@ -86,19 +72,16 @@ async function loadDashboardData() {
         
         const today = new Date().toDateString();
         
-        // Calcular estatísticas
         const activeEstadias = estadias.filter(e => !e.saida);
         const todayStays = estadias.filter(e => new Date(e.entrada).toDateString() === today);
         const todayRevenue = todayStays.reduce((sum, e) => sum + (e.valorTotal || 0), 0);
-        const availableSpots = Math.max(0, 50 - activeEstadias.length); // Assumindo 50 vagas totais
+        const availableSpots = Math.max(0, 50 - activeEstadias.length);
         
-        // Atualizar elementos do dashboard
         document.getElementById('total-veiculos').textContent = activeEstadias.length;
         document.getElementById('estadias-hoje').textContent = todayStays.length;
         document.getElementById('faturamento-hoje').textContent = formatCurrency(todayRevenue);
         document.getElementById('vagas-disponiveis').textContent = availableSpots;
         
-        // Carregar atividades recentes
         loadRecentActivities(estadias.slice(-5).reverse());
         
     } catch (error) {
@@ -109,7 +92,6 @@ async function loadDashboardData() {
     }
 }
 
-// Carregar atividades recentes
 function loadRecentActivities(recentEstadias) {
     const recentList = document.getElementById('recent-list');
     
@@ -131,7 +113,6 @@ function loadRecentActivities(recentEstadias) {
     `).join('');
 }
 
-// Carregar veículos
 async function loadVehicles() {
     showLoading();
     
@@ -147,7 +128,6 @@ async function loadVehicles() {
     }
 }
 
-// Carregar estadias
 async function loadEstadias() {
     showLoading();
     
@@ -163,7 +143,6 @@ async function loadEstadias() {
     }
 }
 
-// Buscar veículos da API
 async function fetchVehicles() {
     const response = await fetch(`${API_BASE_URL}/veiculos`);
     if (!response.ok) {
@@ -172,7 +151,6 @@ async function fetchVehicles() {
     return await response.json();
 }
 
-// Buscar estadias da API
 async function fetchEstadias() {
     const response = await fetch(`${API_BASE_URL}/estadias`);
     if (!response.ok) {
@@ -181,7 +159,6 @@ async function fetchEstadias() {
     return await response.json();
 }
 
-// Exibir veículos na grid
 function displayVehicles(vehicles) {
     const vehiclesGrid = document.getElementById('vehicles-grid');
     
@@ -233,7 +210,6 @@ function displayVehicles(vehicles) {
     }).join('');
 }
 
-// Exibir estadias na grid
 function displayEstadias(estadias) {
     const estadiasGrid = document.getElementById('estadias-grid');
     
@@ -299,14 +275,12 @@ function displayEstadias(estadias) {
     }).join('');
 }
 
-// Filtrar veículos
 function filterVehicles() {
     const searchTerm = document.getElementById('search-input').value.toLowerCase();
     const typeFilter = document.getElementById('type-filter').value;
     
     let filteredVehicles = currentVehicles;
     
-    // Filtro por texto
     if (searchTerm) {
         filteredVehicles = filteredVehicles.filter(vehicle => 
             vehicle.placa.toLowerCase().includes(searchTerm) ||
@@ -316,7 +290,6 @@ function filterVehicles() {
         );
     }
     
-    // Filtro por tipo
     if (typeFilter) {
         filteredVehicles = filteredVehicles.filter(vehicle => 
             vehicle.tipo === typeFilter
@@ -326,21 +299,18 @@ function filterVehicles() {
     displayVehicles(filteredVehicles);
 }
 
-// Filtrar estadias
 function filterEstadias() {
     const searchTerm = document.getElementById('search-estadias').value.toLowerCase();
     const statusFilter = document.getElementById('status-filter').value;
     
     let filteredEstadias = currentEstadias;
     
-    // Filtro por texto
     if (searchTerm) {
         filteredEstadias = filteredEstadias.filter(estadia => 
             estadia.placa.toLowerCase().includes(searchTerm)
         );
     }
     
-    // Filtro por status
     if (statusFilter) {
         if (statusFilter === 'ativo') {
             filteredEstadias = filteredEstadias.filter(estadia => !estadia.saida);
@@ -352,13 +322,11 @@ function filterEstadias() {
     displayEstadias(filteredEstadias);
 }
 
-// Configurar formulário de veículo
 function setupVehicleForm() {
     const form = document.getElementById('vehicle-form');
     form.addEventListener('submit', handleVehicleSubmit);
 }
 
-// Configurar formulário de estadia
 function setupEstadiaForm() {
     const form = document.getElementById('estadia-form');
     if (form) {
@@ -366,15 +334,13 @@ function setupEstadiaForm() {
     }
 }
 
-// Manipular envio do formulário de veículo (criação e edição)
 async function handleVehicleSubmit(event) {
     event.preventDefault();
     
     const formData = new FormData(event.target);
-    const placaOriginal = formData.get('placa-original'); // Campo oculto para edição
+    const placaOriginal = formData.get('placa-original');
     const placaValue = formData.get('placa');
     
-    // Verificar se a placa não é null ou undefined
     if (!placaValue) {
         showToast('Placa é obrigatória', 'error');
         return;
@@ -396,7 +362,7 @@ async function handleVehicleSubmit(event) {
     let successMessage = 'Veículo adicionado com sucesso!';
     let errorMessage = 'Erro ao adicionar veículo';
     
-    if (placaOriginal) { // Se placaOriginal existe, é uma edição
+    if (placaOriginal) {
         url = `${API_BASE_URL}/veiculos/${placaOriginal}`;
         method = 'PATCH';
         successMessage = 'Veículo atualizado com sucesso!';
@@ -424,10 +390,9 @@ async function handleVehicleSubmit(event) {
         showToast(successMessage, 'success');
         closeModal('add-vehicle');
         event.target.reset();
-        document.getElementById('placa').disabled = false; // Habilitar placa para novo cadastro
-        document.getElementById('placa-original').value = ''; // Limpar campo oculto
+        document.getElementById('placa').disabled = false;
+        document.getElementById('placa-original').value = '';
         
-        // Recarregar dados
         if (currentSection === 'veiculos') {
             loadVehicles();
         }
@@ -443,7 +408,6 @@ async function handleVehicleSubmit(event) {
     }
 }
 
-// Manipular envio do formulário de estadia
 async function handleEstadiaSubmit(event) {
     event.preventDefault();
     
@@ -462,7 +426,7 @@ async function handleEstadiaSubmit(event) {
     let successMessage = 'Estadia criada com sucesso!';
     let errorMessage = 'Erro ao criar estadia';
     
-    if (estadiaId) { // Se estadiaId existe, é uma edição
+    if (estadiaId) {
         url = `${API_BASE_URL}/estadias/${estadiaId}`;
         method = 'PATCH';
         successMessage = 'Estadia atualizada com sucesso!';
@@ -491,7 +455,6 @@ async function handleEstadiaSubmit(event) {
         closeModal('add-estadia');
         event.target.reset();
         
-        // Recarregar dados
         if (currentSection === 'estadias') {
             loadEstadias();
         }
@@ -507,12 +470,10 @@ async function handleEstadiaSubmit(event) {
     }
 }
 
-// Abrir modal de cadastro/edição de veículo
 function openVehicleModal(vehicle = null) {
     const form = document.getElementById('vehicle-form');
     form.reset();
     
-    // Garante que o campo esteja sempre editável por padrão
     document.getElementById('placa').readOnly = false; 
     document.getElementById('placa-original').value = '';
 
@@ -520,8 +481,7 @@ function openVehicleModal(vehicle = null) {
         document.getElementById('modal-title-vehicle').innerHTML = '<i class="fas fa-car"></i> Editar Veículo';
         document.getElementById('placa').value = vehicle.placa;
         
-        // AQUI ESTÁ A CORREÇÃO PRINCIPAL
-        document.getElementById('placa').readOnly = true; // Usar readonly em vez de disabled
+        document.getElementById('placa').readOnly = true; 
         
         document.getElementById('placa-original').value = vehicle.placa;
         document.getElementById('tipo').value = vehicle.tipo;
@@ -533,18 +493,15 @@ function openVehicleModal(vehicle = null) {
         document.getElementById('ano').value = vehicle.ano;
     } else {
         document.getElementById('modal-title-vehicle').innerHTML = '<i class="fas fa-car"></i> Cadastro de Veículo';
-        // Garante que ao adicionar novo, não seja readonly
         document.getElementById('placa').readOnly = false; 
     }
     openModal('add-vehicle');
 }
 
-// Abrir modal de cadastro/edição de estadia
 async function openEstadiaModal(estadia = null) {
     const form = document.getElementById('estadia-form');
     form.reset();
     
-    // Carregar veículos para o select
     try {
         const vehicles = await fetchVehicles();
         const placaSelect = document.getElementById('estadia-placa');
@@ -568,14 +525,12 @@ async function openEstadiaModal(estadia = null) {
     } else {
         document.getElementById('modal-title-estadia').innerHTML = '<i class="fas fa-clock"></i> Nova Estadia';
         document.getElementById('estadia-id').value = '';
-        // Definir data/hora atual como padrão para entrada
         const now = new Date();
         document.getElementById('data-entrada').value = formatDateTimeForInput(now);
     }
     openModal('add-estadia');
 }
 
-// Função para iniciar a edição de um veículo
 async function editVehicle(placa) {
     try {
         showLoading();
@@ -593,7 +548,6 @@ async function editVehicle(placa) {
     }
 }
 
-// Função para iniciar a edição de uma estadia
 async function editEstadia(id) {
     try {
         showLoading();
@@ -610,7 +564,6 @@ async function editEstadia(id) {
     }
 }
 
-// Mostrar detalhes da estadia
 async function showEstadiaDetails(id) {
     try {
         showLoading();
@@ -671,7 +624,6 @@ async function showEstadiaDetails(id) {
     }
 }
 
-// Finalizar estadia (registrar saída)
 async function finalizarEstadia(id) {
     if (!confirm('Tem certeza que deseja finalizar esta estadia?')) {
         return;
@@ -698,7 +650,6 @@ async function finalizarEstadia(id) {
         
         showToast('Estadia finalizada com sucesso!', 'success');
         
-        // Recarregar dados
         if (currentSection === 'estadias') {
             loadEstadias();
         }
@@ -714,7 +665,6 @@ async function finalizarEstadia(id) {
     }
 }
 
-// Gerar relatório
 async function generateReport() {
     const dateFrom = document.getElementById('date-from').value;
     const dateTo = document.getElementById('date-to').value;
@@ -729,7 +679,6 @@ async function generateReport() {
         
         const estadias = await fetchEstadias();
         
-        // Filtrar estadias por período
         const filteredEstadias = estadias.filter(estadia => {
             const entradaDate = new Date(estadia.entrada).toDateString();
             const fromDate = new Date(dateFrom).toDateString();
@@ -738,17 +687,14 @@ async function generateReport() {
             return entradaDate >= fromDate && entradaDate <= toDate;
         });
         
-        // Calcular estatísticas
         const totalEstadias = filteredEstadias.length;
         const faturamentoTotal = filteredEstadias.reduce((sum, e) => sum + (e.valorTotal || 0), 0);
         const tempoMedio = calculateAverageTime(filteredEstadias);
         
-        // Atualizar resumo
         document.getElementById('report-total-estadias').textContent = totalEstadias;
         document.getElementById('report-faturamento').textContent = formatCurrency(faturamentoTotal);
         document.getElementById('report-tempo-medio').textContent = tempoMedio;
         
-        // Gerar tabela
         generateReportTable(filteredEstadias);
         
     } catch (error) {
@@ -759,7 +705,6 @@ async function generateReport() {
     }
 }
 
-// Gerar tabela do relatório
 function generateReportTable(estadias) {
     const reportTable = document.getElementById('report-table');
     
@@ -798,7 +743,6 @@ function generateReportTable(estadias) {
     reportTable.innerHTML = tableHTML;
 }
 
-// Funções de modal
 function openModal(modalId) {
     document.getElementById(modalId).style.display = 'block';
 }
@@ -807,7 +751,6 @@ function closeModal(modalId) {
     document.getElementById(modalId).style.display = 'none';
 }
 
-// Funções de loading
 function showLoading() {
     document.getElementById('loading').style.display = 'flex';
 }
@@ -816,7 +759,6 @@ function hideLoading() {
     document.getElementById('loading').style.display = 'none';
 }
 
-// Funções de toast
 function showToast(message, type = 'info') {
     const toastContainer = document.getElementById('toast-container');
     const toast = document.createElement('div');
@@ -836,13 +778,11 @@ function showToast(message, type = 'info') {
     
     toastContainer.appendChild(toast);
     
-    // Remover toast após 5 segundos
     setTimeout(() => {
         toast.remove();
     }, 5000);
 }
 
-// Funções utilitárias
 function formatCurrency(value) {
     return new Intl.NumberFormat('pt-BR', {
         style: 'currency',
@@ -904,7 +844,6 @@ function calculateAverageTime(estadias) {
     return `${hours}h ${minutes}m`;
 }
 
-// Fechar modal ao clicar fora
 window.onclick = function(event) {
     const modals = document.querySelectorAll('.modal');
     modals.forEach(modal => {
@@ -913,4 +852,6 @@ window.onclick = function(event) {
         }
     });
 }
+
+
 
